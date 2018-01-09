@@ -33,6 +33,8 @@
 #include <json_spirit.h>
 #include <nscapi/nscapi_protobuf_functions.hpp>
 #include <plugin.pb-json.h>
+#else
+#include <NSCAPI.h>
 #endif
 
 #include "settings_query_handler.hpp"
