@@ -28,7 +28,9 @@
 #include <str/xtos.hpp>
 #include <str/nscp_string.hpp>
 
+#ifdef HAVE_JSON_SPIRIT
 #include <json_spirit.h>
+#endif 
 
 
 struct zip_archive {
@@ -99,7 +101,7 @@ std::string nsclient::core::zip_plugin::getDescription() {
 	return description_;
 }
 
-
+#ifdef HAVE_JSON_SPIRIT
 nsclient::core::script_def read_script_def(const json_spirit::Value & s) {
 	nsclient::core::script_def def;
 	if (s.isString()) {
@@ -122,6 +124,7 @@ nsclient::core::script_def read_script_def(const json_spirit::Value & s) {
 	}
 	return def;
 }
+#endif
 
 
 void nsclient::core::zip_plugin::read_metadata() {
@@ -149,6 +152,7 @@ void nsclient::core::zip_plugin::read_metadata() {
 	throw plugin_exception(get_alias_or_name(), "Failed to find module.json in " + file_.string());
 }
 void nsclient::core::zip_plugin::read_metadata(std::string data) {
+#ifdef HAVE_JSON_SPIRIT
 	try {
 		json_spirit::Value root;
 		json_spirit::read_or_throw(data, root);
@@ -176,6 +180,9 @@ void nsclient::core::zip_plugin::read_metadata(std::string data) {
 	} catch (const json_spirit::ParseError &e) {
 		throw plugin_exception(get_alias_or_name(), "Failed to parse module.json " + e.reason_ + " at line " + str::xtos(e.line_));
 	}
+#else
+	throw plugin_exception(get_alias_or_name(), "Failed to parse module.json, not complied with JSON Spirit.");
+#endif
 }
 
 bool nsclient::core::zip_plugin::load_plugin(NSCAPI::moduleLoadMode mode) {
